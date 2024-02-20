@@ -1,7 +1,6 @@
 open Riot
 module Connection = Connection
 module Driver = Driver
-module Row = Row
 module Res = Res
 module Query = Query
 module Param = Param
@@ -33,7 +32,7 @@ let start_link ?(connections = 10) (driver : Driver.t) =
 
   Ok pool_id
 
-let fetch_one pool_id ?params query =
+let execute pool_id params query =
   let p =
     match params with
     | Some opts -> opts
@@ -42,52 +41,7 @@ let fetch_one pool_id ?params query =
 
   let item = Poolparty.get_holder_item pool_id |> Result.get_ok in
 
-  let result =
-    match Connection.execute item.item p query with
-    | Ok rows ->
-      (match rows with
-      | [] -> Error Res.NoRows
-      | r -> Ok (List.hd r))
-    | Error e -> Error e
-  in
-
-  Poolparty.release pool_id item.holder_pid;
-
-  result
-
-let fetch_many pool_id ?params query =
-  let p =
-    match params with
-    | Some opts -> opts
-    | None -> []
-  in
-
-  let item = Poolparty.get_holder_item pool_id |> Result.get_ok in
-
-  let result =
-    match Connection.execute item.item p query with
-    | Ok rows -> Ok rows
-    | Error e -> Error e
-  in
-
-  Poolparty.release pool_id item.holder_pid;
-
-  result
-
-let exec pool_id ?params query =
-  let p =
-    match params with
-    | Some opts -> opts
-    | None -> []
-  in
-
-  let item = Poolparty.get_holder_item pool_id |> Result.get_ok in
-
-  let result =
-    match Connection.execute item.item p query with
-    | Ok _ -> Ok ()
-    | Error e -> Error e
-  in
+  let result = Connection.execute item.item p query in
 
   Poolparty.release pool_id item.holder_pid;
 

@@ -31,7 +31,7 @@ module Postgres = struct
      * This function is used by the Connection.make function to create a new connection
      *)
     let execute (conn : connection) (params : Dbcaml.Param.t list) query :
-        (Dbcaml.Row.t list, Dbcaml.Res.execution_error) Dbcaml.Res.result =
+        (string list list, Dbcaml.Res.execution_error) Dbcaml.Res.result =
       try
         let array_params =
           params

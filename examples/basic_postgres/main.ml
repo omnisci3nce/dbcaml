@@ -21,20 +21,20 @@ let () =
 
   (* Fetch 1 row from the database *)
   (match
-     Dbcaml.fetch_one
+     Voj.fetch_one
        pool_id
        ~params:[Dbcaml.Param.String "1"]
        "select * from users where id = $1"
    with
   | Ok x ->
-    let rows = Dbcaml.Row.row_to_type x in
+    let rows = Voj.Row.row_to_type x in
     (* Iterate over each column and print it's values *)
     List.iter (fun x -> print_endline x) rows
   | Error x -> print_endline (Dbcaml.Res.execution_error_to_string x));
 
   (* Fetch multiple rows from the database *)
   (match
-     Dbcaml.fetch_many
+     Voj.fetch_many
        pool_id
        ~params:[Dbcaml.Param.String "1"]
        "select * from users where id = $1"
@@ -42,7 +42,7 @@ let () =
   | Ok x ->
     List.iter
       (fun x ->
-        let rows = Dbcaml.Row.row_to_type x in
+        let rows = Voj.Row.row_to_type x in
         (* Iterate over each column and print it's values *)
         List.iter (fun x -> print_endline x) rows)
       x
@@ -50,7 +50,7 @@ let () =
 
   (* Exec a query to the database *)
   (match
-     Dbcaml.exec
+     Voj.exec
        pool_id
        ~params:[Dbcaml.Param.String "1"]
        "select * from users where id = $1"

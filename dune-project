@@ -29,6 +29,21 @@
   (topics "database" "dbcaml")))
 
 (package
+ (name voj)
+ (synopsis "voj is a query library for dbcaml")
+ (description "voj is a query library for dbcaml")
+ (depends
+  ocaml
+  dune
+  (dbcaml
+   (= :version))
+  (riot
+   (>= 0.0.8))
+  uri)
+ (tags
+  (topics "database" "dbcaml")))
+
+(package
  (name dbcaml_driver_postgres)
  (synopsis "Postgres driver for dbcaml")
  (description "Postgres driver for dbcaml")

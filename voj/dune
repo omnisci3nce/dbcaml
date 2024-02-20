@@ -1,0 +1,4 @@
+(library
+ (package voj)
+ (name voj)
+ (libraries riot dbcaml uri))

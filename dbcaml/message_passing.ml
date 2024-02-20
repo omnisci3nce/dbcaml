@@ -1,7 +1,7 @@
 open Riot
 
 type Message.t +=
-  | Result of (Row.t list, Res.execution_error) Res.result
+  | Result of (string list list, Res.execution_error) Res.result
   | Query of Query.t
 
 type holder_item = {
