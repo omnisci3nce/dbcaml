@@ -60,6 +60,7 @@ module Postgres = struct
           |> List.map (fun x -> conn#escape_string x)
           |> Array.of_list
         in
+
         conn#send_query ~params:array_params query;
 
         let result = fetch_single_result c in

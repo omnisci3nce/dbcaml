@@ -2,8 +2,6 @@ open Riot
 module Connection = Connection
 module Driver = Driver
 module Res = Res
-module Query = Query
-module Param = Param
 
 open Logger.Make (struct
   let namespace = ["dbcaml"]

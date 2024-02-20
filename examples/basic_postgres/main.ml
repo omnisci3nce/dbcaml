@@ -23,7 +23,7 @@ let () =
   (match
      Voj.fetch_one
        pool_id
-       ~params:[Dbcaml.Param.String "1"]
+       ~params:[Voj.Param.String "1"]
        "select * from users where id = $1"
    with
   | Ok x ->
@@ -36,7 +36,7 @@ let () =
   (match
      Voj.fetch_many
        pool_id
-       ~params:[Dbcaml.Param.String "1"]
+       ~params:[Voj.Param.String "1"]
        "select * from users where id = $1"
    with
   | Ok x ->
@@ -52,7 +52,7 @@ let () =
   (match
      Voj.exec
        pool_id
-       ~params:[Dbcaml.Param.String "1"]
+       ~params:[Voj.Param.String "1"]
        "select * from users where id = $1"
    with
   | Ok _ -> print_endline "Executed successfully"

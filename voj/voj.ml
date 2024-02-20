@@ -1,4 +1,5 @@
 module Row = Row
+module Param = Param
 
 let fetch_one pool_id ?params query =
   let result =

@@ -10,8 +10,8 @@ type t =
       (* This function takes a 'generic conn and a query. And return a Row.T list which is our type of a row *)
       execute:
         'conn ->
-        Param.t list ->
-        string ->
+        bytes list ->
+        bytes ->
         (string list list, Res.execution_error) Res.result;
     }
       -> t
