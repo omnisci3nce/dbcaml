@@ -30,17 +30,40 @@ module Postgres = struct
      * Create the execute function that also use the PGOCaml.connection to send a request to Postgres database. 
      * This function is used by the Connection.make function to create a new connection
      *)
-    let execute (conn : connection) (params : bytes list) query :
+    let execute
+        (conn : connection) (params : Dbcaml.Connection.param list) query :
         (string list list, Dbcaml.Res.execution_error) Dbcaml.Res.result =
       try
-        let array_params =
-          params |> List.map (fun x -> conn#escape_string x) |> Array.of_list
+        let p =
+          params
+          |> List.map (fun x ->
+                 match x with
+                 | Dbcaml.Connection.String s ->
+                   (conn#escape_string s, oid_of_ftype TEXT)
+                 | Dbcaml.Connection.Number i ->
+                   (string_of_int i, oid_of_ftype INT8)
+                 | Dbcaml.Connection.Float f ->
+                   (string_of_float f, oid_of_ftype FLOAT8)
+                 | Dbcaml.Connection.Bool b ->
+                   (string_of_bool b, oid_of_ftype BOOL)
+                 | Dbcaml.Connection.Null -> (null, oid_of_ftype TEXT))
+          |> Array.of_list
         in
 
-        conn#send_query ~params:array_params query;
+        let array_params = Array.map fst p in
+        let param_types = Array.map snd p in
+
+        let stmt = Printf.sprintf "dbcaml_%s" (Base64.encode_string query) in
+
+        c#send_prepare stmt ~param_types query;
+
+        assert ((fetch_single_result c)#status = Command_ok);
+
+        c#send_query_prepared ~params:array_params stmt;
 
         let result = fetch_single_result c in
 
+        (* TODO: investigate single-row mode *)
         match result#status with
         | Command_ok
         | Tuples_ok ->

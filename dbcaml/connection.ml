@@ -3,15 +3,23 @@
 * This makes us able to  
 *)
 
+type param =
+  | String of string
+  | Number of int
+  | Float of float
+  | Bool of bool
+  | Null
+
 type t =
   | C : {
       (* 'conn is a generic *)
       conn: 'conn;
       (* This function takes a 'generic conn and a query. And return a Row.T list which is our type of a row *)
+      (* TODO: we need to add Derserialize *)
       execute:
         'conn ->
-        bytes list ->
-        bytes ->
+        param list ->
+        string ->
         (string list list, Res.execution_error) Res.result;
     }
       -> t
