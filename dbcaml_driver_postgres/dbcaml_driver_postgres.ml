@@ -25,6 +25,7 @@ module Postgres = struct
         let socket = Pg.socket conn in
         let _ = socket in
 
+        (*FIXME: get a real result and either return Wire.De or bytes so we can deserialize it*)
         Error (Dbcaml.Res.GeneralError "Not implemented")
       with
       | Postgresql.Error e ->
