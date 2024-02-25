@@ -1,67 +1,41 @@
-open Postgresql
-
 let ( let* ) = Result.bind
 
-let wait_for_result c =
-  c#consume_input;
-  while c#is_busy do
-    ignore (Unix.select [Obj.magic c#socket] [] [] (-1.0));
-    c#consume_input
-  done
+(* let wait_for_result c = *)
+(*   c#consume_input; *)
+(*   while c#is_busy do *)
+(*     ignore (Unix.select [Obj.magic c#socket] [] [] (10000.0)); *)
+(*     c#consume_input *)
+(*   done *)
 
-let fetch_result c =
-  wait_for_result c;
-  c#get_result
+(* let fetch_result c = *)
+(*   wait_for_result c; *)
+(*   c#get_result *)
 
-let fetch_single_result c =
-  match fetch_result c with
-  | None -> assert false
-  | Some r ->
-    assert (fetch_result c = None);
-    r
+(* let fetch_single_result c = *)
+(*   match fetch_result c with *)
+(*   | None -> assert false *)
+(*   | Some r -> *)
+(*     assert (fetch_result c = None); *)
+(*     r *)
 
 module Postgres = struct
   type config = { conninfo: string }
 
   let connect config =
-    let c = new connection ~conninfo:config.conninfo () in
+    let conn = Pg.make ~conninfo:config.conninfo () in
+    let socket = Pg.socket conn in
 
     (*
      * Create the execute function that also use the PGOCaml.connection to send a request to Postgres database. 
      * This function is used by the Connection.make function to create a new connection
      *)
     let execute
-        (conn : connection) (params : Dbcaml.Connection.param list) query :
+        (conn : Pg.t) (params : Dbcaml.Connection.param list) query :
         (string list list, Dbcaml.Res.execution_error) Dbcaml.Res.result =
       try
-        let p =
-          params
-          |> List.map (fun x ->
-                 match x with
-                 | Dbcaml.Connection.String s ->
-                   (conn#escape_string s, oid_of_ftype TEXT)
-                 | Dbcaml.Connection.Number i ->
-                   (string_of_int i, oid_of_ftype INT8)
-                 | Dbcaml.Connection.Float f ->
-                   (string_of_float f, oid_of_ftype FLOAT8)
-                 | Dbcaml.Connection.Bool b ->
-                   (string_of_bool b, oid_of_ftype BOOL)
-                 | Dbcaml.Connection.Null -> (null, oid_of_ftype TEXT))
-          |> Array.of_list
-        in
-
-        let array_params = Array.map fst p in
-        let param_types = Array.map snd p in
-
-        let stmt = Printf.sprintf "dbcaml_%s" (Base64.encode_string query) in
-
-        c#send_prepare stmt ~param_types query;
-
-        assert ((fetch_single_result c)#status = Command_ok);
-
-        c#send_query_prepared ~params:array_params stmt;
-
-        let result = fetch_single_result c in
+        let params = Pg.make_params conn params in
+        let* query_id = Pg.prepare_query conn query params in
+        let* status = Pg.send_prepared_query conn query_id params in
 
         (* TODO: investigate single-row mode *)
         match result#status with
@@ -88,9 +62,8 @@ module Postgres = struct
     Ok conn
 end
 
-let deserialize de value =
-  let state = Wire.make value in
-
+let deserialize de input =
+  let state = Wire.make input in
   Serde.deserialize (module Wire.De) state de
 
 let connection conninfo =
