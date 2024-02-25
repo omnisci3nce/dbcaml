@@ -88,7 +88,10 @@ module Postgres = struct
     Ok conn
 end
 
-(*Create a new postgres driver using the module Postgress and the config provided *)
+let deserialize de value =
+  let state = Wire.make value in
+
+  Serde.deserialize (module Wire.De) state de
 
 let connection conninfo =
   Dbcaml.Driver.Driver { driver = (module Postgres); config = { conninfo } }

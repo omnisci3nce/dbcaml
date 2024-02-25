@@ -8,6 +8,14 @@ module type Intf = sig
   type config
 
   val connect : config -> (Connection.t, [> `msg of string ]) IO.io_result
+  (*
+  type de_input
+
+  type de_state
+
+  val deserialize :
+    ('a, de_state) Serde.De.t -> de_input -> ('a, Serde.error) result
+*)
 end
 
 (*

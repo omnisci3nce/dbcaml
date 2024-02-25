@@ -1,5 +1,5 @@
 (executable
- (package dbcaml)
+ (package voj)
  (public_name basic_postgres)
  (name main)
  (libraries dbcaml_driver_postgres dbcaml voj riot))
