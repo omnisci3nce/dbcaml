@@ -11,8 +11,10 @@ module Postgres = struct
      * Create the execute function that also use the PGOCaml.connection to send a request to Postgres database. 
      * This function is used by the Connection.make function to create a new connection
      *)
-    let execute (conn : Pg.t) (params : Dbcaml.Connection.param list) query :
-        (bytes, Dbcaml.Res.execution_error) Dbcaml.Res.result =
+    let execute
+        (conn : Postgresql.connection)
+        (params : Dbcaml.Connection.param list)
+        query : (bytes, Dbcaml.Res.execution_error) Dbcaml.Res.result =
       try
         let params = Pg.make_params conn params in
 
