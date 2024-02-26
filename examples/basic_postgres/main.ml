@@ -17,7 +17,9 @@ let () =
       "postgresql://postgres:mysecretpassword@localhost:6432/development"
   in
 
-  let _ = Dbcaml.start_link ~connections:10 driver |> Result.get_ok in
+  let _ = Dbcaml.Driver.connect driver in
+
+  sleep 1.1;
 
   ()
 

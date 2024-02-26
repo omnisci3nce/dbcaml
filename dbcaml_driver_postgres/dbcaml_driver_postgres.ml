@@ -1,5 +1,7 @@
 let ( let* ) = Result.bind
 
+let ( let** ) = Option.bind
+
 module Postgres = struct
   type config = { conninfo: string }
 
