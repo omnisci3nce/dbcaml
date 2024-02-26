@@ -10,25 +10,11 @@ type param =
   | Bool of bool
   | Null
 
-module Dbcaml = struct
-  module Driver = struct
-    module type Intf = sig
-      type de_input
-
-      type de_state
-
-      val deserialize :
-        ('a, de_state) Serde.De.t -> de_input -> ('a, Serde.error) result
-    end
-  end
-end
-
 type t =
   | C : {
       (* 'conn is a generic *)
       conn: 'conn;
       (* This function takes a 'generic conn and a query. And return a Row.T list which is our type of a row *)
-      (* TODO: we need to add Derserialize *)
       execute:
         'conn -> param list -> string -> (bytes, Res.execution_error) Res.result;
     }

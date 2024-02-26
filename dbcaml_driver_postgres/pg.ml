@@ -1,36 +1,12 @@
 open Riot
 
-(* let wait_for_result c = *)
-(*   c#consume_input; *)
-(*   while c#is_busy do *)
-(*     ignore (Unix.select [Obj.magic c#socket] [] [] (10000.0)); *)
-(*     c#consume_input *)
-(*   done *)
+let ( let* ) = Result.bind
 
-(* let fetch_result c = *)
-(*   wait_for_result c; *)
-(*   c#get_result *)
-
-(* let fetch_single_result c = *)
-(*   match fetch_result c with *)
-(*   | None -> assert false *)
-(*   | Some r -> *)
-(*     assert (fetch_result c = None); *)
-(*     r *)
-
-type params = {
-  values: string array;
-  types: Postgresql.oid array;
-}
+type t = Net.Socket.stream_socket
 
 type query_id = string
 
-let make ~conninfo () = new Postgresql.connection ~conninfo ()
-
-let socket conn =
-  let sock : Net.Tcp_stream.t = Obj.magic conn#socket in
-  sock
-
+(*
 let make_params (conn : Postgresql.connection) params : params =
   let (values, types) =
     params
@@ -50,25 +26,11 @@ let make_params (conn : Postgresql.connection) params : params =
   in
 
   { values = Array.of_list values; types = Array.of_list types }
+*)
 
-let prepare_query (conn : Postgresql.connection) query params =
-  let query_id = Printf.sprintf "dbcaml_%s" (Base64.encode_string query) in
+let connect conninfo =
+  let* net_addr = Net.Addr.parse conninfo in
 
-  conn#send_prepare query_id ~param_types:params.types query;
+  let* conn = Net.Tcp_stream.connect net_addr in
 
-  match conn#status with
-  | Postgresql.Ok -> Ok query_id
-  | _ ->
-    let error_message : string = conn#error_message in
-    Error error_message
-
-let send_prepared_query (conn : Postgresql.connection) query_id params =
-  try
-    conn#send_query_prepared ~params:params.values query_id;
-
-    (* let result = fetch_single_result c in *)
-    Ok query_id
-  with
-  | Postgresql.Error _ ->
-    let error_message : string = conn#error_message in
-    Error error_message
+  Ok conn
