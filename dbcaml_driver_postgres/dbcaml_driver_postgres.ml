@@ -8,9 +8,8 @@ module Postgres = struct
   let connect config =
     let* conn = Pg.connect config.conninfo in
 
-    let execute
-        (_ : Riot.Net.Socket.stream_socket) (_ : Dbcaml.Connection.param list) _
-        : (bytes, Dbcaml.Res.execution_error) Dbcaml.Res.result =
+    let execute (_ : Pg.t) (_ : Dbcaml.Connection.param list) _ :
+        (bytes, Dbcaml.Res.execution_error) Dbcaml.Res.result =
       Error (Dbcaml.Res.GeneralError "Not implemented")
     in
 

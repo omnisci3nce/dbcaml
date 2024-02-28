@@ -1,7 +1,18 @@
-open Riot
-
 type t
 
-type query_id
-
-val connect : string -> (Net.Socket.stream_socket, [> IO.io_error ]) result
+val connect :
+  string ->
+  ( t,
+    [> `Closed
+    | `Connection_closed
+    | `Eof
+    | `Exn of exn
+    | `Msg of string
+    | `No_info
+    | `Noop
+    | `Process_down
+    | `Timeout
+    | `Unix_error of Unix.error
+    | `Would_block
+    ] )
+  result

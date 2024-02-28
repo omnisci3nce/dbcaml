@@ -14,7 +14,7 @@ let () =
 
   let driver =
     Dbcaml_driver_postgres.connection
-      "postgresql://postgres:mysecretpassword@localhost:6432/development"
+      "postgresql://postgres:mysecretpassword@127.0.0.1:6432/development"
   in
 
   let _ = Dbcaml.Driver.connect driver in
