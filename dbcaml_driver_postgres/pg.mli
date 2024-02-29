@@ -2,6 +2,7 @@ module Bs = Bytestring
 
 type t
 
-val connect : string -> (t, Rio.io_error) result
+(* Connect to the database *)
+val connect : string -> (t, [> ]) result
 
-val prepare : t -> string -> (t * Bs.t, Rio.io_error) result
+val prepare : t -> string -> (t * Bs.t, [> ]) result
