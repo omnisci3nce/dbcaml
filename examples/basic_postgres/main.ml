@@ -1,23 +1,26 @@
 open Riot
 
 open Logger.Make (struct
-  let namespace = ["Dbcaml example"]
+  let namespace = ["dbcaml"; "dbcaml_driver_postgres"]
 end)
 
 let () =
   Riot.run @@ fun () ->
   let _ = Logger.start () |> Result.get_ok in
 
-  Logger.set_log_level (Some Logger.Info);
+  set_log_level (Some Logger.Debug);
 
-  Logger.info (fun f -> f "Starting application");
+  info (fun f -> f "Starting application");
 
   let driver =
     Dbcaml_driver_postgres.connection
-      "postgresql://postgres:mysecretpassword@127.0.0.1:6432/development"
+      "postgresql://postgres:mysecretpassword@localhost:6432/development"
   in
 
-  let _ = Dbcaml.Driver.connect driver in
+  (match Dbcaml.Driver.connect driver with
+  | Ok _ -> print_endline "i connected"
+  | Error (`Msg e) -> error (fun f -> f "failed to start connection: %s" e)
+  | Error _ -> print_endline "got a bs error");
 
   sleep 1.1;
 
