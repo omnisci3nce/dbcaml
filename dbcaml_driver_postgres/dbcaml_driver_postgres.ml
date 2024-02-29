@@ -1,3 +1,9 @@
+module Bs = Bytestring
+
+open Riot.Logger.Make (struct
+  let namespace = ["dbcaml"; "dbcaml_postgres_driver"]
+end)
+
 let ( let* ) = Result.bind
 
 let ( let** ) = Option.bind
@@ -8,8 +14,14 @@ module Postgres = struct
   let connect config =
     let* conn = Pg.connect config.conninfo in
 
-    let execute (_ : Pg.t) (_ : Dbcaml.Connection.param list) _ :
+    let execute (conn : Pg.t) (_ : Dbcaml.Connection.param list) _ :
         (bytes, Dbcaml.Res.execution_error) Dbcaml.Res.result =
+      let _ =
+        match Pg.prepare conn "select * from users" with
+        | Ok (_, data) -> print_endline (Bs.to_string data)
+        | Error e -> error (fun f -> f "error: %a" Rio.pp_err e)
+      in
+
       Error (Dbcaml.Res.GeneralError "Not implemented")
     in
 

@@ -1,18 +1,7 @@
+module Bs = Bytestring
+
 type t
 
-val connect :
-  string ->
-  ( t,
-    [> `Closed
-    | `Connection_closed
-    | `Eof
-    | `Exn of exn
-    | `Msg of string
-    | `No_info
-    | `Noop
-    | `Process_down
-    | `Timeout
-    | `Unix_error of Unix.error
-    | `Would_block
-    ] )
-  result
+val connect : string -> (t, Rio.io_error) result
+
+val prepare : t -> string -> (t * Bs.t, Rio.io_error) result

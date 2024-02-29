@@ -1,3 +1,4 @@
+module Bs = Bytestring
 open Riot
 
 open Logger.Make (struct
@@ -15,13 +16,24 @@ type t =
     }
       -> t
 
-let prepare (Conn { writer; _ } as conn) query params =
+let send (Conn { writer; _ } as conn) data =
   debug (fun f ->
-      let bufs = Bytestring.to_iovec data in
-      f "sending %d octets (iovec)" (IO.Iovec.length bufs));
-  let buf = Bytestring.to_string data in
+      let bufs = Bs.to_iovec data in
+      f "sending %d octets (iovec)" (Rio.Iovec.length bufs));
+  let buf = Bs.to_string data in
   let* () = IO.write_all writer ~buf in
   Ok conn
+
+let receive (Conn { reader; _ } as conn) =
+  let* data = Bs.with_bytes (fun buf -> IO.read reader buf) in
+  Ok (conn, data)
+
+let prepare (Conn _ as conn) query =
+  let data = Bs.of_string query in
+  let* _ = send conn data in
+  let response = receive conn in
+
+  response
 
 let make_connection ~reader ~writer ~uri ~addr =
   Conn { writer; reader; uri; addr }
