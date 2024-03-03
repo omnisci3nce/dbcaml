@@ -24,7 +24,7 @@ val connect :
 
 val send :
   t ->
-  Bs.t ->
+  string ->
   ( t,
     [> `Closed
     | `Connection_closed

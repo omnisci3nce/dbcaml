@@ -18,22 +18,17 @@ type t =
 
 (*  2. Set correct bytes length *)
 let send (Conn { writer; _ } as conn) data =
-  debug (fun f ->
-      let bufs = Bs.to_iovec data in
-      f "sending %d octets (iovec)" (Rio.Iovec.length bufs));
-
   let message_length =
     Encode.int32
       (Int32.of_int
          (String.length data
-         (* for protocol version *)
-         + 4
          (* for message length itself *)
          + 4))
   in
 
-  let buf = Bs.to_string (Bytes.to_string message_length ^ data) in
-  let* () = IO.write_all writer ~buf in
+  let message = Bytes.to_string message_length ^ data in
+
+  let* () = IO.write_all writer ~buf:message in
   Ok conn
 
 let receive (Conn { reader; _ } as conn) =
