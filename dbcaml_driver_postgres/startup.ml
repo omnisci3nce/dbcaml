@@ -8,17 +8,6 @@ let startup_param conn key value =
 
   Ok ()
 
-(* Function to encode an int32 to a 4-byte string *)
-let encode_int32 i =
-  let open Int32 in
-  Bs.of_string
-    (Printf.sprintf
-       "%d%d%d%d"
-       (to_int (shift_right i 24) land 0xFF)
-       (to_int (shift_right i 16) land 0xFF)
-       (to_int (shift_right i 8) land 0xFF)
-       (to_int i land 0xFF))
-
 let startup_message username database =
   (* Protocol version 3.0 *)
   let protocol_version = encode_int32 196608l in
@@ -34,7 +23,7 @@ let startup_message username database =
          (* for message length itself *)
          + 4))
   in
-  Bs.to_string message_length ^ Bs.to_string protocol_version ^ params
+  Bytes.to_string message_length ^ Bytes.to_string protocol_version ^ params
 
 let start conn username database =
   let startup_msg = startup_message username database in
