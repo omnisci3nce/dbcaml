@@ -1,20 +1,19 @@
+module Bs = Bytestring
+
 type authentication =
   | Ok
   | CleartextPassword
-  | Md5Password of authentication_md5_password
+  | Md5Password of { salt: bytes }
   | Sasl of bytes
-  | SaslContinue of authentication_sasl_continue
-  | SaslFinal of authentication_sasl_final
+  | SaslContinue of {
+      salt: bytes;
+      iterations: int;
+      nonce: string;
+      message: string;
+    }
+  | SaslFinal of { verifier: bytes }
 
-and authentication_md5_password = { salt: bytes }
-
-and authentication_sasl_continue = {
-  salt: bytes;
-  iterations: int;
-  nonce: string;
-  message: string;
-}
-
-and authentication_sasl_final = { verifier: bytes }
-
-let authentication conn data = print_endline ""
+let authentication _conn data =
+  Printf.printf
+    "%ld"
+    (Bytes.get_int32_be (Bytes.of_string (Bs.to_string data)) 0)

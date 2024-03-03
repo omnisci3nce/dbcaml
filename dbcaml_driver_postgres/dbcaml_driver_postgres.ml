@@ -14,7 +14,9 @@ module Postgres = struct
   let connect config =
     let* conn = Pg.connect config.conninfo in
 
-    let* _ = Startup.start conn "postgres" "development" in
+    let* startup_response = Startup.start conn "postgres" "development" in
+
+    let _ = Authentication.authentication conn startup_response in
 
     let execute (_ : Pg.t) (_ : Dbcaml.Connection.param list) _ :
         (bytes, Dbcaml.Res.execution_error) Dbcaml.Res.result =
