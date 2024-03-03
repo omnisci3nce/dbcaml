@@ -14,10 +14,7 @@ module Postgres = struct
   let connect config =
     let* conn = Pg.connect config.conninfo in
 
-    let* _ = Establish.start conn "postgres" "development" in
-
-    let* (_, data) = Pg.prepare conn "select * from users" in
-    print_endline (Bytestring.to_string data);
+    let* _ = Startup.start conn "postgres" "development" in
 
     let execute (_ : Pg.t) (_ : Dbcaml.Connection.param list) _ :
         (bytes, Dbcaml.Res.execution_error) Dbcaml.Res.result =

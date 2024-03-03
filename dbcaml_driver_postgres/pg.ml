@@ -16,6 +16,7 @@ type t =
     }
       -> t
 
+(*  2. Set correct bytes length *)
 let send (Conn { writer; _ } as conn) data =
   debug (fun f ->
       let bufs = Bs.to_iovec data in
@@ -27,13 +28,6 @@ let send (Conn { writer; _ } as conn) data =
 let receive (Conn { reader; _ } as conn) =
   let* data = Bs.with_bytes (fun buf -> IO.read reader buf) in
   Ok (conn, data)
-
-let prepare (Conn _ as conn) query =
-  let data = Bs.of_string query in
-  let* _ = send conn data in
-  let response = receive conn in
-
-  response
 
 let make_connection ~reader ~writer ~uri ~addr =
   Conn { writer; reader; uri; addr }

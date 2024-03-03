@@ -22,8 +22,6 @@ let () =
   | Error (`Msg e) -> error (fun f -> f "failed to start connection: %s" e)
   | Error _ -> print_endline "got a bs error");
 
-  sleep 1.1;
-
   ()
 
 (*
