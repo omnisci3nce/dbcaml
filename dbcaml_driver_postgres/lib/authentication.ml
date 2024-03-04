@@ -22,7 +22,6 @@ type authentication =
 exception Protocol_error of string
 
 let decode_authentication _conn buf =
-  print_endline (Bs.to_string buf);
   let first_line =
     String.split_on_char '\n' (Bs.to_string buf)
     |> List.hd

@@ -1,7 +1,9 @@
-open OUnit2
+open Alcotest
 
-let test_addition _ = assert_equal "hello" "hello"
+let test_samestring () = check string "same string" "hello" "hello"
 
-let suite = "test_math_utils" >::: ["test_addition" >:: test_addition]
-
-let () = run_test_tt_main suite
+let () =
+  let open Alcotest in
+  run
+    "Temp tests"
+    [("Same string", [test_case "Test is same string" `Quick test_samestring])]
