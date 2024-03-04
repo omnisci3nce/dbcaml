@@ -22,14 +22,11 @@ type authentication =
 exception Protocol_error of string
 
 let decode_authentication _conn buf =
-  let first_line =
-    String.split_on_char '\n' (Bs.to_string buf)
-    |> List.hd
-    |> String.trim
-    |> String.uppercase_ascii
-  in
-  Printf.printf ";%s;" first_line;
+  let auth_message = Bs.to_string buf |> String.split_on_char '\n' in
+  let auth_type = List.nth auth_message 1 |> String.trim in
 
-  match first_line with
-  | "R" -> print_endline "is R"
-  | s -> print_endline s
+  match auth_type with
+  | "SCRAM-SHA-256" -> print_endline "matched on SCRAM-SHA-256"
+  | "MD5" -> print_endline "matched on MD5"
+  | "Password" -> print_endline "matched on password"
+  | s -> Printf.printf "no match: %s" s

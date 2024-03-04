@@ -18,9 +18,9 @@ let () =
   in
 
   (match Dbcaml.Driver.connect driver with
-  | Ok _ -> print_endline "i connected"
+  | Ok _ -> debug (fun f -> f "connected")
   | Error (`Msg e) -> error (fun f -> f "failed to start connection: %s" e)
-  | Error _ -> print_endline "got a bs error");
+  | Error _ -> error (fun f -> f "got a weird error"));
 
   ()
 
