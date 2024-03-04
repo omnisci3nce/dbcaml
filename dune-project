@@ -43,8 +43,9 @@
  (tags
   (topics "database" "dbcaml")))
 
+
 (package
- (name dbcaml_driver_postgres)
+ (name dbcaml-driver-postgres)
  (synopsis "Postgres driver for dbcaml")
  (description "Postgres driver for dbcaml")
  (depends
