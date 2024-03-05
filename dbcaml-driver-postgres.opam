@@ -11,10 +11,12 @@ doc: "https://github.com/emilpriver/dbcaml"
 bug-reports: "https://github.com/emilpriver/dbcaml/issues"
 depends: [
   "ocaml"
+  "alcotest" {with-test}
   "dune" {>= "3.12"}
   "riot" {>= "0.0.8"}
   "dbcaml"
-  "postgresql"
+  "bytestring"
+  "castore"
   "uri"
   "odoc" {with-doc}
 ]
