@@ -22,6 +22,7 @@
  (depends
   ocaml
   dune
+  (alcotest :with-test)
   (riot
    (>= 0.0.8))
   uri)
@@ -34,6 +35,7 @@
  (description "voj is a query library for dbcaml")
  (depends
   ocaml
+  (alcotest :with-test)
   dune
   (dbcaml
    (= :version))
@@ -50,11 +52,13 @@
  (description "Postgres driver for dbcaml")
  (depends
   ocaml
+  (alcotest :with-test)
   dune
   (riot
    (>= 0.0.8))
   dbcaml
-  postgresql
+  bytestring
+  castore
   uri)
  (tags
   (topics "database" "dbcaml" "dbcaml")))
